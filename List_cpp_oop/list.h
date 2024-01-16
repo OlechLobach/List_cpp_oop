@@ -4,7 +4,6 @@
 #include <iostream>
 using namespace std;
 
-
 template <typename T>
 class Node {
 public:
@@ -45,30 +44,106 @@ public:
         }
     }
 
-    void DeleteFromHead() {
-        if (head) {
-            Node<T>* temp = head;
-            head = head->next;
-            delete temp;
+    void InsertAtPosition(T value, int position) {
+        Node<T>* newNode = new Node<T>(value);
+        if (position == 0) {
+            newNode->next = head;
+            head = newNode;
+            if (!tail) {
+                tail = newNode;
+            }
+        }
+        else {
+            Node<T>* current = head;
+            int currentPosition = 0;
+            while (current && currentPosition < position - 1) {
+                current = current->next;
+                currentPosition++;
+            }
+            if (current) {
+                newNode->next = current->next;
+                current->next = newNode;
+                if (!newNode->next) {
+                    tail = newNode;
+                }
+            }
+            else {
+                cout << "Invalid position for insertion.\n";
+            }
         }
     }
 
-    void DeleteFromTail() {
-        if (head) {
-            if (head == tail) {
-                delete head;
-                head = tail = nullptr;
-            }
-            else {
-                Node<T>* current = head;
-                while (current->next != tail) {
-                    current = current->next;
+    void DeleteAtPosition(int position) {
+        if (position == 0) {
+            if (head) {
+                Node<T>* temp = head;
+                head = head->next;
+                delete temp;
+                if (!head) {
+                    tail = nullptr;
                 }
-                delete tail;
-                tail = current;
-                tail->next = nullptr;
             }
         }
+        else {
+            Node<T>* current = head;
+            int currentPosition = 0;
+            while (current && currentPosition < position - 1) {
+                current = current->next;
+                currentPosition++;
+            }
+            if (current && current->next) {
+                Node<T>* temp = current->next;
+                current->next = temp->next;
+                delete temp;
+                if (!current->next) {
+                    tail = current;
+                }
+            }
+            else {
+                cout << "Invalid position for deletion.\n";
+            }
+        }
+    }
+
+    int Find(T value) const {
+        Node<T>* current = head;
+        int position = 0;
+        while (current) {
+            if (current->data == value) {
+                return position;
+            }
+            current = current->next;
+            position++;
+        }
+        return -1;
+    }
+
+    int Replace(T oldValue, T newValue) {
+        Node<T>* current = head;
+        int count = 0;
+        while (current) {
+            if (current->data == oldValue) {
+                current->data = newValue;
+                count++;
+            }
+            current = current->next;
+        }
+        return count;
+    }
+
+    void Reverse() {
+        Node<T>* prev = nullptr;
+        Node<T>* current = head;
+        Node<T>* next = nullptr;
+
+        while (current) {
+            next = current->next;
+            current->next = prev;
+            prev = current;
+            current = next;
+        }
+
+        head = prev;
     }
 
     void DeleteAll() {
